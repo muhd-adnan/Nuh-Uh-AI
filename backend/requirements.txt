@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+google-genai
+python-dotenv
+tavily-python
+requests
+beautifulsoup4
+
+# to setup required packages, run the following command in the terminal
+# python -m pip install -r requirements.txt
