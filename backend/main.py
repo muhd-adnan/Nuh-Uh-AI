@@ -5,6 +5,7 @@ from claim_extractor import extract_claims
 from web_search import search_web
 from evidence_extractor import extract_evidence
 from webpage_fetcher import fetch_webpage
+from evidence_classifier import classify_evidence
 
 
 app = FastAPI()
@@ -53,11 +54,23 @@ def chat(request: ChatRequest):
                 source_text
             )
 
+            # V4: Classify the evidence
+            classification = "neutral"
+
+            if evidence.evidence:
+                classification_result = classify_evidence(
+                    claim,
+                    evidence.evidence
+                )
+
+                classification = classification_result.classification
+
             evidence_results.append({
                 "title": result["title"],
                 "url": result["url"],
                 "score": result["score"],
-                "evidence": evidence.evidence
+                "evidence": evidence.evidence,
+                "classification": classification
             })
 
         results.append({
