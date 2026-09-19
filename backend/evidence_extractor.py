@@ -1,13 +1,9 @@
-from urllib import response
-
 from dotenv import load_dotenv
-from google import genai
 from pydantic import BaseModel
 from google.genai import types
+from gemini_client import client, GEMINI_MODEL
 
 load_dotenv()
-
-client = genai.Client()
 
 
 class Evidence(BaseModel):
@@ -15,7 +11,6 @@ class Evidence(BaseModel):
 
 
 def extract_evidence(claim: str, content: str) -> Evidence:
-
     content = content[:10000]
 
     print("Sending request to Gemini...")
@@ -38,7 +33,7 @@ def extract_evidence(claim: str, content: str) -> Evidence:
     """
 
     response = client.models.generate_content(
-        model="gemini-3.6-flash",
+        model=GEMINI_MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
@@ -49,17 +44,3 @@ def extract_evidence(claim: str, content: str) -> Evidence:
     print("Gemini response received.")
 
     return response.parsed
-
-if __name__ == "__main__":
-
-    claim = "The Earth is flat"
-
-    content = """
-    Earth is a roughly spherical planet. Its shape explains
-    seasons, changes in weather, and many other natural phenomena.
-    """
-
-    result = extract_evidence(claim, content)
-
-    print(result)
-    print(result.evidence)

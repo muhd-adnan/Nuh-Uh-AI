@@ -1,16 +1,19 @@
 from dotenv import load_dotenv
-from google import genai
 from pydantic import BaseModel
 from typing import Literal
 from google.genai import types
+from gemini_client import client, GEMINI_MODEL
 
 load_dotenv()
 
-client = genai.Client()
-
 
 class Credibility(BaseModel):
-    credibility: Literal["high", "medium", "low", "unknown"]
+    credibility: Literal[
+        "high",
+        "medium",
+        "low",
+        "unknown"
+    ]
 
 
 def assess_source_credibility(
@@ -23,7 +26,6 @@ def assess_source_credibility(
     Assess the credibility of the source based only on the information provided.
 
     Credibility levels:
-
     - high: The source appears to be from a highly authoritative or well-established institution.
     - medium: The source appears reasonably trustworthy but has limitations.
     - low: The source has significant credibility concerns.
@@ -52,7 +54,7 @@ def assess_source_credibility(
     """
 
     response = client.models.generate_content(
-        model="gemini-3.6-flash",
+        model=GEMINI_MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
@@ -61,4 +63,3 @@ def assess_source_credibility(
     )
 
     return response.parsed
-

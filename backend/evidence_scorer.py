@@ -1,12 +1,10 @@
 from dotenv import load_dotenv
-from google import genai
 from pydantic import BaseModel
 from typing import Literal
 from google.genai import types
+from gemini_client import client, GEMINI_MODEL
 
 load_dotenv()
-
-client = genai.Client()
 
 
 class EvidenceStrength(BaseModel):
@@ -29,7 +27,6 @@ def assess_evidence_strength(
     Assess the strength of the provided evidence in relation to the claim.
 
     Strength levels:
-
     - strong: The evidence directly and clearly addresses the claim,
       and the source has strong credibility.
     - moderate: The evidence meaningfully addresses the claim,
@@ -65,7 +62,7 @@ def assess_evidence_strength(
     """
 
     response = client.models.generate_content(
-        model="gemini-3.6-flash",
+        model=GEMINI_MODEL,
         contents=prompt,
         config=types.GenerateContentConfig(
             response_mime_type="application/json",

@@ -1,18 +1,13 @@
 from dotenv import load_dotenv
-from google import genai
 from pydantic import BaseModel
+from gemini_client import client, GEMINI_MODEL
 
 load_dotenv()
-
-client = genai.Client()
-
 
 class Claims(BaseModel):
     claims: list[str]
 
-
 def extract_claims(message: str) -> Claims:
-
     prompt = f"""
     Extract the factual claims from the user's message.
 
@@ -27,7 +22,7 @@ def extract_claims(message: str) -> Claims:
     """
 
     response = client.models.generate_content(
-        model="gemini-3.8-flash",
+        model=GEMINI_MODEL,
         contents=prompt,
         config={
             "response_mime_type": "application/json",
@@ -36,12 +31,3 @@ def extract_claims(message: str) -> Claims:
     )
 
     return response.parsed
-
-
-if __name__ == "__main__":
-    result = extract_claims(
-        "I think the Earth is flat and humans only use 10% of their brains."
-    )
-
-    print(result)
-    print(result.claims)
