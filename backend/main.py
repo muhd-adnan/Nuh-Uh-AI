@@ -6,6 +6,8 @@ from web_search import search_web
 from evidence_extractor import extract_evidence
 from webpage_fetcher import fetch_webpage
 from evidence_classifier import classify_evidence
+from source_credibility import assess_source_credibility
+from evidence_scorer import assess_evidence_strength
 
 
 app = FastAPI()
@@ -48,7 +50,7 @@ def chat(request: ChatRequest):
             else:
                 source_text = result["content"]
 
-            # Extract relevant evidence
+            # V3: Extract relevant evidence
             evidence = extract_evidence(
                 claim,
                 source_text
@@ -65,12 +67,33 @@ def chat(request: ChatRequest):
 
                 classification = classification_result.classification
 
+            # V5: Assess source credibility
+            credibility_result = assess_source_credibility(
+                result["title"],
+                result["url"],
+                source_text
+            )
+
+            credibility = credibility_result.credibility
+
+            # V6: Assess evidence strength
+            strength_result = assess_evidence_strength(
+                claim,
+                evidence.evidence,
+                classification,
+                credibility
+            )
+
+            strength = strength_result.strength
+
             evidence_results.append({
                 "title": result["title"],
                 "url": result["url"],
                 "score": result["score"],
                 "evidence": evidence.evidence,
-                "classification": classification
+                "classification": classification,
+                "credibility": credibility,
+                "strength": strength
             })
 
         results.append({
@@ -81,3 +104,4 @@ def chat(request: ChatRequest):
     return {
         "claims": results
     }
+
